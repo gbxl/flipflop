@@ -43,8 +43,10 @@ module Flipflop
 
     initializer "flipflop.request_interceptor" do |app|
       interceptor = Strategies::AbstractStrategy::RequestInterceptor
-      ActionController::Base.send(:include, interceptor)
-      ActionController::API.send(:include, interceptor) if defined?(ActionController::API)
+      ActiveSupport.on_load :action_controller do
+        include interceptor
+        include interceptor if defined?(ActionController::API)
+      end
     end
 
     def run_tasks_blocks(app)
